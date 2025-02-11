@@ -48,18 +48,18 @@
 ## ข้อกำหนดทางเทคนิค (Technical Requirements)
 
 ### ซอฟต์แวร์และเครื่องมือ
-**✅ Frontend:**
+- **✅ Frontend:**
 
 - HTML – โครงสร้างพื้นฐานของเว็บเพจ
 - CSS – ใช้สำหรับการออกแบบและตกแต่งหน้าเว็บ
 - JavaScript (React.js) – ใช้พัฒนา UI และทำให้เว็บโต้ตอบได้
 - Tailwind CSS หรือ Bootstrap – สำหรับสไตล์และการออกแบบที่รวดเร็ว
-**✅ Backend:**
+- **✅ Backend:**
   
 - Python (Flask) – ใช้พัฒนาเซิร์ฟเวอร์และ API
 - TensorFlow / PyTorch – ใช้สำหรับ AI แนะนำเมนูอาหาร
 - Spoonacular API – ใช้ดึงข้อมูลสารอาหารและสูตรอาหาร
-**✅ Database & Hosting:**
+- **✅ Database & Hosting:**
 
 - Google Firebase – ใช้จัดการฐานข้อมูลผู้ใช้และระบบยืนยันตัวตน
 - PostgreSQL หรือ MongoDB – สำหรับจัดเก็บข้อมูลเมนูและผู้ใช้
