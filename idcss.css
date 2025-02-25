@@ -1,0 +1,173 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #4E070C, #D22701);
+    color: #fff;
+    text-align: center;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.input-group input, .input-group select {
+    flex: 1;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    outline: none;
+}
+
+/* ปรับขนาด placeholder ของ อายุ น้ำหนัก ส่วนสูง ให้แคบลง และเปลี่ยนสี */
+.input-group input[type="number"] {
+    max-width: 120px;
+    text-align: center;
+}
+
+input::placeholder {
+    color: #ffffff; /* สีอ่อนกว่าให้ดูสวยงาม */
+    opacity: 0.8;
+}
+
+.button {
+    background: #28a745;
+    color: white;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.meal-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.meal-item:hover {
+    transform: scale(1.05);
+}
+
+.meal-item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    margin-right: 15px;
+    border: 2px solid #fff;
+}
+
+.meal-info {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.meal-info h4 {
+    margin: 5px 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+.meal-info p {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #ddd;
+}
+
+.meal-item button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.meal-item button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+/* ปรับแต่ง Checkbox ให้ชิดซ้าย */
+.card input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #28a745;
+    border-radius: 5px;
+    background-color: transparent;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.card input[type="checkbox"]:checked {
+    background-color: #28a745;
+    border-color: #1e7e34;
+}
+
+.card input[type="checkbox"]:checked::after {
+    content: '\2713';
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.card label {
+    display: flex;
+    align-items: center;
+}

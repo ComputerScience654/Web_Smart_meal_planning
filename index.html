@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>วางแผนมื้ออาหารอัจฉริยะ</title>
+    <link rel="stylesheet" href="idcss.css">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        .card { border: 1px solid #ccc; border-radius: 8px; padding: 20px; box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        .button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .meal-item { display: flex; align-items: center; margin-bottom: 15px; }
+        .meal-item img { width: 50px; height: 50px; margin-right: 15px; border-radius: 5px; }
+        .meal-info { flex-grow: 1; }
+        .meal-info h4 { margin: 5px 0; }
+        .meal-info p { margin: 2px 0; }
+    </style>
+</head>
+<body>
+    <h1>วางแผนมื้ออาหารอัจฉริยะ</h1>
+    <div class="card">
+        <label for="age">อายุ:</label>
+        <input type="number" id="age" placeholder="กรอกอายุของคุณ" />
+        
+        <label for="gender">เพศ:</label>
+        <select id="gender">
+            <option value="male">ชาย</option>
+            <option value="female">หญิง</option>
+        </select>
+        
+        <label for="weight">น้ำหนัก (กก.):</label>
+        <input type="number" id="weight" placeholder="กรอกน้ำหนักของคุณ" />
+        
+        <label for="height">ส่วนสูง (ซม.):</label>
+        <input type="number" id="height" placeholder="กรอกส่วนสูงของคุณ" />
+        
+        <label for="activity">ระดับกิจกรรม:</label>
+        <select id="activity">
+            <option value="1.2">ไม่ค่อยออกกำลังกาย</option>
+            <option value="1.375">ออกกำลังกายเล็กน้อย</option>
+            <option value="1.55">ออกกำลังกายปานกลาง</option>
+            <option value="1.725">ออกกำลังกายหนัก</option>
+            <option value="1.9">นักกีฬา</option>
+        </select>
+        
+        <label for="goal">เป้าหมาย:</label>
+        <select id="goal">
+            <option value="lose">ลดน้ำหนัก</option>
+            <option value="maintain">รักษาน้ำหนัก</option>
+            <option value="gain">เพิ่มน้ำหนัก</option>
+        </select>
+        
+        <label>โรคประจำตัว:</label><br>
+        <input type="checkbox" id="diabetes" value="diabetes"> โรคเบาหวาน<br>
+        <input type="checkbox" id="kidney" value="kidney"> โรคไต<br>
+        <input type="checkbox" id="heart" value="heart"> โรคหัวใจ<br>
+        <input type="checkbox" id="stomach" value="stomach"> โรคกระเพาะอาหาร<br>
+
+        <button class="button" onclick="generateMealPlan()">สร้างแผนมื้ออาหาร</button>
+    </div>
+    
+    <div id="mealPlan" class="card" style="display: none;">
+        <h2>แผนมื้ออาหาร 7 วันของคุณ</h2>
+        <div id="mealList"></div>
+    </div>
+
+    <script>
+
+        const meals = {
+            "อาหารเช้า": [
+                { name: "โจ๊กหมู", calories: 250, protein: 12, fat: 5, carbs: 40, sodium: 600, image: "https://example.com/jok-moo.jpg" },
+                { name: "ขนมปังโฮลวีต + ไข่ต้ม", calories: 300, protein: 15, fat: 8, carbs: 45, sodium: 350, image: "https://example.com/wholewheat-egg.jpg" },
+                { name: "โยเกิร์ต + กล้วย", calories: 200, protein: 8, fat: 3, carbs: 35, sodium: 150, image: "https://example.com/yogurt-banana.jpg" },
+                { name: "ข้าวต้มปลา", calories: 280, protein: 20, fat: 4, carbs: 38, sodium: 500, image: "https://example.com/fish-rice.jpg" },
+                { name: "แซนด์วิชอกไก่", calories: 320, protein: 25, fat: 6, carbs: 40, sodium: 450, image: "https://example.com/chicken-sandwich.jpg" }
+            ],
+            "อาหารกลางวัน": [
+                { name: "ข้าวกะเพราไก่", calories: 450, protein: 30, fat: 10, carbs: 50, sodium: 1200, image: "https://example.com/krapao.jpg" },
+                { name: "สลัดทูน่า", calories: 350, protein: 28, fat: 15, carbs: 25, sodium: 600, image: "https://example.com/tuna-salad.jpg" },
+                { name: "แกงจืดเต้าหู้หมูสับ", calories: 280, protein: 22, fat: 8, carbs: 30, sodium: 700, image: "https://example.com/tofu-soup.jpg" },
+                { name: "ผัดไทยกุ้งสด", calories: 400, protein: 20, fat: 12, carbs: 55, sodium: 1100, image: "https://example.com/padthai.jpg" },
+                { name: "ข้าวมันไก่", calories: 600, protein: 35, fat: 20, carbs: 60, sodium: 800, image: "https://example.com/hainanese-chicken.jpg" }
+            ],
+            "อาหารเย็น": [
+                { name: "สเต็กปลาแซลมอน", calories: 450, protein: 40, fat: 15, carbs: 20, sodium: 500, image: "https://example.com/salmon-steak.jpg" },
+                { name: "ต้มยำไก่", calories: 320, protein: 30, fat: 5, carbs: 20, sodium: 900, image: "https://example.com/tomyum.jpg" },
+                { name: "ยำวุ้นเส้น", calories: 280, protein: 18, fat: 4, carbs: 40, sodium: 850, image: "https://example.com/yen-ta-fo.jpg" },
+                { name: "ข้าวต้มหมู", calories: 300, protein: 22, fat: 6, carbs: 45, sodium: 650, image: "https://example.com/pork-rice.jpg" },
+                { name: "ผัดผักรวมมิตร", calories: 250, protein: 10, fat: 5, carbs: 35, sodium: 400, image: "https://example.com/mixed-vegetables.jpg" }
+            ]
+        };
+    
+        function generateMealPlan() {
+            document.getElementById("mealPlan").style.display = "block";
+            const mealList = document.getElementById("mealList");
+            mealList.innerHTML = "";
+    
+            for (let day = 1; day <= 7; day++) {
+                const dayHeader = document.createElement("h3");
+                dayHeader.innerText = `วันที่ ${day}`;
+                mealList.appendChild(dayHeader);
+    
+                Object.keys(meals).forEach(mealTime => {
+                    const mealOptions = meals[mealTime];
+                    const mealIndex = Math.floor(Math.random() * mealOptions.length);
+                    const meal = mealOptions[mealIndex];
+    
+                    const listItem = document.createElement("div");
+                    listItem.className = "meal-item";
+                    listItem.innerHTML = `
+                        <img src="${meal.image}" alt="${meal.name}">
+                        <div class="meal-info">
+                            <h4>${mealTime}: <span>${meal.name}</span></h4>
+                            <p>แคลอรี่: ${meal.calories} kcal | โปรตีน: ${meal.protein}g | ไขมัน: ${meal.fat}g | คาร์บ: ${meal.carbs}g | โซเดียม: ${meal.sodium}mg</p>
+                        </div>
+                        <button onclick="changeMeal(this, '${mealTime}')">เปลี่ยน</button>
+                    `;
+                    mealList.appendChild(listItem);
+                });
+            }
+        }
+    
+        function changeMeal(button, mealTime) {
+            const mealOptions = meals[mealTime];
+            const newMeal = mealOptions[Math.floor(Math.random() * mealOptions.length)];
+    
+            const mealItem = button.parentElement;
+            mealItem.innerHTML = `
+                <img src="${newMeal.image}" alt="${newMeal.name}">
+                <div class="meal-info">
+                    <h4>${mealTime}: <span>${newMeal.name}</span></h4>
+                    <p>แคลอรี่: ${newMeal.calories} kcal | โปรตีน: ${newMeal.protein}g | ไขมัน: ${newMeal.fat}g | คาร์บ: ${newMeal.carbs}g | โซเดียม: ${newMeal.sodium}mg</p>
+                </div>
+                <button onclick="changeMeal(this, '${mealTime}')">เปลี่ยน</button>
+            `;
+        }
+    </script>
+</body>
+</html>
