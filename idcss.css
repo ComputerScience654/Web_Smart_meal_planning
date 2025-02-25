@@ -1,3 +1,4 @@
+
 body {
     font-family: 'Poppins', sans-serif;
     max-width: 900px;
@@ -48,9 +49,9 @@ input, select {
     border: none;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: #000000;
     outline: none;
-}
+} 
 
 /* ปรับขนาด placeholder ของ อายุ น้ำหนัก ส่วนสูง ให้แคบลง และเปลี่ยนสี */
 .input-group input[type="number"] {
@@ -59,7 +60,7 @@ input, select {
 }
 
 input::placeholder {
-    color: #ffffff; /* สีอ่อนกว่าให้ดูสวยงาม */
+    color: #000000; /* สีอ่อนกว่าให้ดูสวยงาม */
     opacity: 0.8;
 }
 
