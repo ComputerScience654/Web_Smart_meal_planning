@@ -1,11 +1,13 @@
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Prompt", sans-serif; ;
+    font-weight: 200;
+    font-style: normal;
     max-width: 900px;
     margin: auto;
     padding: 20px;
-    background: linear-gradient(135deg, #4E070C, #D22701);
-    color: #fff;
+    background: linear-gradient(135deg, #ffd451, #ffd451);
+    color: #000000;
     text-align: center;
 }
 
@@ -49,9 +51,9 @@ input, select {
     border: none;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.2);
-    color: #000000;
+    color: #303030;
     outline: none;
-} 
+}
 
 /* ปรับขนาด placeholder ของ อายุ น้ำหนัก ส่วนสูง ให้แคบลง และเปลี่ยนสี */
 .input-group input[type="number"] {
@@ -60,11 +62,23 @@ input, select {
 }
 
 input::placeholder {
-    color: #000000; /* สีอ่อนกว่าให้ดูสวยงาม */
+    color: #303030; /* สีอ่อนกว่าให้ดูสวยงาม */
     opacity: 0.8;
 }
 
+label, input {
+    font-family: "Prompt", sans-serif; /* หรือฟอนต์ที่ต้องการ */
+    font-size: 16px; /* ปรับขนาดตัวอักษรตามต้องการ */
+}
+
+label, select {
+    font-family: "Prompt", sans-serif;
+    font-size: 16px; /* ปรับขนาดตัวอักษรตามต้องการ */
+}
+
 .button {
+    font-family: "Prompt", sans-serif;
+    font-size: 16px; /* ปรับขนาดตัวอักษรตามต้องการ */
     background: #28a745;
     color: white;
     padding: 12px 18px;
@@ -81,6 +95,104 @@ input::placeholder {
     transform: scale(1.05);
 }
 
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #032b06;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #ffcc70;
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.2);
+}
+
+body.dark-mode {
+    background: #000000; /* สีดำเข้ม */
+    color: white;
+}
+
+
+.banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    text-align: center;
+    background: url('img/banner.jpg') no-repeat center center/cover;
+    color: white;
+    position: relative;
+}
+
+.banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.banner h1, .banner p, .banner a {
+    position: relative;
+    z-index: 1;
+}
+
+.banner h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.banner p {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+
+
 .meal-item {
     display: flex;
     align-items: center;
@@ -92,16 +204,17 @@ input::placeholder {
     transition: transform 0.3s ease;
 }
 
-.meal-item:hover {
-    transform: scale(1.05);
+.meal-item img {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    margin-right: 15px;
+    border: 3px solid #fff;
+    transition: transform 0.3s ease;
 }
 
-.meal-item img {
-    width: 70px;
-    height: 70px;
-    border-radius: 10px;
-    margin-right: 15px;
-    border: 2px solid #fff;
+.meal-item:hover {
+    transform: scale(1.05);
 }
 
 .meal-info {
@@ -112,16 +225,18 @@ input::placeholder {
 .meal-info h4 {
     margin: 5px 0;
     font-size: 18px;
-    color: #fff;
+    color: #000000;
 }
 
 .meal-info p {
     margin: 2px 0;
     font-size: 14px;
-    color: #ddd;
+    color: #303030;
 }
 
 .meal-item button {
+    font-family: "Prompt", sans-serif;
+    font-size: 12px; /* ปรับขนาดตัวอักษรตามต้องการ */
     background-color: #007bff;
     color: white;
     border: none;
