@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>วางแผนมื้ออาหารอัจฉริยะ</title>
     <link rel="stylesheet" href="idcss.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="script.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        body { font-family: "Prompt", sans-serif;  max-width: 600px; margin: auto; padding: 20px; }
         .card { border: 1px solid #ccc; border-radius: 8px; padding: 20px; box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
         .button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
         .meal-item { display: flex; align-items: center; margin-bottom: 15px; }
@@ -14,10 +21,36 @@
         .meal-info { flex-grow: 1; }
         .meal-info h4 { margin: 5px 0; }
         .meal-info p { margin: 2px 0; }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+        .dark-mode .card {
+            background: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
-    <h1>วางแผนมื้ออาหารอัจฉริยะ</h1>
+    <!-- แถบเมนูด้านบน -->
+    <nav class="navbar">
+        <div class="logo">MealPlan🥦</div>
+        <ul class="nav-links">
+            <li><a href="#">หน้าแรก</a></li>
+            <li><a href="#about">เกี่ยวกับ</a></li>
+            <li><a href="#contact">ติดต่อ</a></li>
+        </ul>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+    </nav>
+
+    <!-- แบนเนอร์ -->
+    <header class="banner">
+        <h1>วางแผนมื้ออาหารของคุณง่าย ๆ</h1>
+        <p>เลือกอาหารที่เหมาะสมและสุขภาพดีในไม่กี่คลิก</p>
+    </header>
+
+
+   
     <div class="card">
         <label for="age">อายุ:</label>
         <input type="number" id="age" placeholder="กรอกอายุของคุณ" />
@@ -51,89 +84,271 @@
         </select>
         
         <label>โรคประจำตัว:</label><br>
+        <input type="checkbox" id="diabetes" value="nodisease"> ไม่มีโรคประจำตัว<br>
         <input type="checkbox" id="diabetes" value="diabetes"> โรคเบาหวาน<br>
         <input type="checkbox" id="kidney" value="kidney"> โรคไต<br>
         <input type="checkbox" id="heart" value="heart"> โรคหัวใจ<br>
         <input type="checkbox" id="stomach" value="stomach"> โรคกระเพาะอาหาร<br>
 
         <button class="button" onclick="generateMealPlan()">สร้างแผนมื้ออาหาร</button>
+        <div id="error-message" class="error"></div>
     </div>
     
+
     <div id="mealPlan" class="card" style="display: none;">
+        
         <h2>แผนมื้ออาหาร 7 วันของคุณ</h2>
         <div id="mealList"></div>
+        
+
     </div>
 
     <script>
 
         const meals = {
             "อาหารเช้า": [
-                { name: "โจ๊กหมู", calories: 250, protein: 12, fat: 5, carbs: 40, sodium: 600, image: "img/jok-moo.jpg" },
-                { name: "ขนมปังโฮลวีต + ไข่ต้ม", calories: 300, protein: 15, fat: 8, carbs: 45, sodium: 350, image: "img/wholewheat-egg.jpg" },
-                { name: "โยเกิร์ต + กล้วย", calories: 200, protein: 8, fat: 3, carbs: 35, sodium: 150, image: "img/yogurt-banana.jpg" },
-                { name: "ข้าวต้มปลา", calories: 280, protein: 20, fat: 4, carbs: 38, sodium: 500, image: "img/fish-rice.jpg" },
-                { name: "แซนด์วิชอกไก่", calories: 320, protein: 25, fat: 6, carbs: 40, sodium: 450, image: "img/chicken-sandwich.jpg" }
+                { name: "โจ๊กหมู", calories: 250, protein: 12, fat: 5, carbs: 40, sodium: 600, image: "img/jok-moo.jpg", suitableFor: ["heart", "diabetes", "nodisease"] },
+                { name: "ขนมปังโฮลวีต + ไข่ต้ม", calories: 300, protein: 15, fat: 8, carbs: 45, sodium: 350, image: "img/wholewheat-egg.jpg", suitableFor: ["heart", "diabetes", "stomach", "nodisease"] },
+                { name: "โยเกิร์ต + กล้วย", calories: 200, protein: 8, fat: 3, carbs: 35, sodium: 150, image: "img/yogurt-banana.jpg", suitableFor: ["diabetes", "stomach", "nodisease"] },
+                { name: "ข้าวต้มปลา", calories: 280, protein: 20, fat: 4, carbs: 38, sodium: 500, image: "img/fish-rice.jpg", suitableFor: ["heart", "kidney"] },
+                { name: "แซนด์วิชอกไก่", calories: 320, protein: 25, fat: 6, carbs: 40, sodium: 450, image: "img/chicken-sandwich.jpg", suitableFor: ["heart", "kidney", "stomach", "nodisease"] },
+                { name: "ข้าวไข่เจียว", calories: 350, protein: 18, fat: 12, carbs: 40, sodium: 400, image: "img/egg-rice.jpg", suitableFor: ["heart", "diabetes", "nodisease"] },
+                { name: "ข้าวต้มกุ๊ย", calories: 250, protein: 15, fat: 8, carbs: 35, sodium: 500, image: "img/porridge.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "ขนมปังแป้งข้าวโพด + แฮม", calories: 310, protein: 20, fat: 10, carbs: 40, sodium: 400, image: "img/ham-bread.jpg", suitableFor: ["heart", "kidney", "nodisease"] },
+                { name: "ข้าวกล้องต้มกะหล่ำปลี", calories: 240, protein: 10, fat: 5, carbs: 45, sodium: 350, image: "img/brown-rice-cabbage.jpg", suitableFor: ["diabetes", "stomach", "nodisease"] },
+                { name: "ข้าวผัดไข่ต้ม", calories: 320, protein: 18, fat: 10, carbs: 40, sodium: 450, image: "img/fried-rice.jpg", suitableFor: ["heart", "nodisease"] }
             ],
             "อาหารกลางวัน": [
-                { name: "ข้าวกะเพราไก่", calories: 450, protein: 30, fat: 10, carbs: 50, sodium: 1200, image: "img/krapao.jpg" },
-                { name: "สลัดทูน่า", calories: 350, protein: 28, fat: 15, carbs: 25, sodium: 600, image: "img/tuna-salad.jpg" },
-                { name: "แกงจืดเต้าหู้หมูสับ", calories: 280, protein: 22, fat: 8, carbs: 30, sodium: 700, image: "img/tofu-soup.jpg" },
-                { name: "ผัดไทยกุ้งสด", calories: 400, protein: 20, fat: 12, carbs: 55, sodium: 1100, image: "img/padthai.jpg" },
-                { name: "ข้าวมันไก่", calories: 600, protein: 35, fat: 20, carbs: 60, sodium: 800, image: "img/hainanese-chicken.jpg" }
+                { name: "ข้าวกะเพราไก่", calories: 450, protein: 30, fat: 10, carbs: 50, sodium: 1200, image: "img/krapao.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "สลัดทูน่า", calories: 350, protein: 28, fat: 15, carbs: 25, sodium: 600, image: "img/tuna-salad.jpg", suitableFor: ["heart", "diabetes", "nodisease"] },
+                { name: "แกงจืดเต้าหู้หมูสับ", calories: 280, protein: 22, fat: 8, carbs: 30, sodium: 700, image: "img/tofu-soup.jpg", suitableFor: ["kidney", "nodisease"] },
+                { name: "ผัดไทยกุ้งสด", calories: 400, protein: 20, fat: 12, carbs: 55, sodium: 1100, image: "img/padthai.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "ข้าวมันไก่", calories: 600, protein: 35, fat: 20, carbs: 60, sodium: 800, image: "img/hainanese-chicken.jpg", suitableFor: ["stomach", "nodisease"] },
+                { name: "ข้าวหมูทอด", calories: 500, protein: 30, fat: 15, carbs: 60, sodium: 1000, image: "img/fried-pork.jpg", suitableFor: ["heart", "kidney", "nodisease"] },
+                { name: "ข้าวสวยกับไข่คน", calories: 350, protein: 18, fat: 10, carbs: 50, sodium: 600, image: "img/rice-scrambled-egg.jpg", suitableFor: ["heart", "diabetes", "nodisease"] },
+                { name: "ยำหมูยอ", calories: 280, protein: 20, fat: 8, carbs: 35, sodium: 700, image: "img/ham-salad.jpg", suitableFor: ["stomach", "nodisease"] },
+                { name: "ไก่อบสมุนไพร", calories: 350, protein: 30, fat: 15, carbs: 25, sodium: 600, image: "img/herb-chicken.jpg", suitableFor: ["heart", "kidney", "nodisease"] },
+                { name: "สเต็กปลา", calories: 400, protein: 35, fat: 15, carbs: 30, sodium: 500, image: "img/fish-steak.jpg", suitableFor: ["heart", "diabetes", "nodisease"] }
             ],
             "อาหารเย็น": [
-                { name: "สเต็กปลาแซลมอน", calories: 450, protein: 40, fat: 15, carbs: 20, sodium: 500, image: "img/salmon-steak.jpg" },
-                { name: "ต้มยำไก่", calories: 320, protein: 30, fat: 5, carbs: 20, sodium: 900, image: "img/tomyum.jpg" },
-                { name: "ยำวุ้นเส้น", calories: 280, protein: 18, fat: 4, carbs: 40, sodium: 850, image: "img/yen-ta-fo.jpg" },
-                { name: "ข้าวต้มหมู", calories: 300, protein: 22, fat: 6, carbs: 45, sodium: 650, image: "img/pork-rice.jpg" },
-                { name: "ผัดผักรวมมิตร", calories: 250, protein: 10, fat: 5, carbs: 35, sodium: 400, image: "img/mixed-vegetables.jpg" }
+                { name: "สเต็กปลาแซลมอน", calories: 450, protein: 40, fat: 15, carbs: 20, sodium: 500, image: "img/salmon-steak.jpg", suitableFor: ["heart", "kidney", "nodisease"] },
+                { name: "ต้มยำไก่", calories: 320, protein: 30, fat: 5, carbs: 20, sodium: 900, image: "img/tomyum.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "ยำวุ้นเส้น", calories: 280, protein: 18, fat: 4, carbs: 40, sodium: 850, image: "img/yen-ta-fo.jpg", suitableFor: ["stomach", "nodisease"] },
+                { name: "ข้าวต้มหมู", calories: 300, protein: 22, fat: 6, carbs: 45, sodium: 650, image: "img/pork-rice.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "ผัดผักรวมมิตร", calories: 250, protein: 10, fat: 5, carbs: 35, sodium: 400, image: "img/mixed-vegetables.jpg", suitableFor: ["heart", "diabetes", "nodisease"] },
+                { name: "ปลานึ่งมะนาว", calories: 350, protein: 30, fat: 10, carbs: 25, sodium: 700, image: "img/steamed-fish.jpg", suitableFor: ["heart", "kidney", "nodisease"] },
+                { name: "ข้าวต้มกุ้ง", calories: 350, protein: 20, fat: 10, carbs: 35, sodium: 700, image: "img/shrimp-rice.jpg", suitableFor: ["heart", "stomach", "nodisease"] },
+                { name: "สลัดผักรวม", calories: 150, protein: 5, fat: 5, carbs: 25, sodium: 300, image: "img/vegetable-salad.jpg", suitableFor: ["diabetes", "heart", "nodisease"] },
+                { name: "ข้าวกล้องผัดกะหล่ำปลี", calories: 270, protein: 10, fat: 6, carbs: 40, sodium: 500, image: "img/brown-rice-cabbage-fried.jpg", suitableFor: ["diabetes", "stomach", "nodisease"] },
+                { name: "ยำทะเล", calories: 280, protein: 22, fat: 10, carbs: 35, sodium: 800, image: "img/seafood-salad.jpg", suitableFor: ["heart", "diabetes", "nodisease"] }
             ]
         };
     
         function generateMealPlan() {
             document.getElementById("mealPlan").style.display = "block";
+            const errorMessageDiv = document.getElementById('error-message');
             const mealList = document.getElementById("mealList");
-            mealList.innerHTML = "";
+            errorMessageDiv.innerHTML = ''; // Clear previous error messages
+            mealList.innerHTML = ""; // Clear previous meal plan
     
-            for (let day = 1; day <= 7; day++) {
+            // รับค่าจากแบบฟอร์ม
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const activity = parseFloat(document.getElementById('activity').value);
+            const goal = document.getElementById('goal').value;
+
+            // ตรวจสอบเงื่อนไขสุขภาพที่เลือก
+            const conditions = [];
+            if (document.getElementById('diabetes').checked) conditions.push("nodisease");
+            if (document.getElementById('diabetes').checked) conditions.push("diabetes");
+            if (document.getElementById('kidney').checked) conditions.push("kidney");
+            if (document.getElementById('heart').checked) conditions.push("heart");
+            if (document.getElementById('stomach').checked) conditions.push("stomach");
+
+            // ตรวจสอบข้อมูลแบบฟอร์ม
+            if (!age || !weight || !height || !activity || !goal || conditions.length === 0) {
+                errorMessageDiv.innerHTML = "กรุณากรอกข้อมูลให้ครบทุกช่อง!";
+                return;
+            }
+
+           // คำนวณ BMR (อัตราการเผาผลาญพลังงานขั้นพื้นฐาน)
+           let BMR;
+           if (gender === "male") {
+               BMR = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+           } else {
+               BMR = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+           }
+
+           // คำนวณ TDEE (การใช้พลังงานทั้งหมดต่อวัน)
+           const TDEE = BMR * activity;
+
+           // ปรับให้เข้ากับเป้าหมาย
+           let calorieTarget;
+           if (goal === "lose") {
+               calorieTarget = TDEE - 500; // ลดน้ำหนัก
+           } else if (goal === "maintain") {
+               calorieTarget = TDEE; // รักษาน้ำหนัก
+           } else {
+               calorieTarget = TDEE + 500; // เพิ่มน้ำหนัก
+           }
+
+            // กรองมื้ออาหารตามเงื่อนไข
+            const filterMeals = (mealList) => {
+                return mealList.filter(meal => {
+                    return conditions.every(condition => meal.suitableFor.includes(condition));
+                });
+            };
+
+            const selectedBreakfast = filterMeals(meals["อาหารเช้า"]);
+            const selectedLunch = filterMeals(meals["อาหารกลางวัน"]);
+            const selectedDinner = filterMeals(meals["อาหารเย็น"]);
+
+            const randomMeal = (mealsList) => mealsList[Math.floor(Math.random() * mealsList.length)];
+
+            // เลือกมื้ออาหารแบบสุ่มสำหรับแต่ละมื้อ
+            const breakfast = randomMeal(selectedBreakfast);
+            const lunch = randomMeal(selectedLunch);
+            const dinner = randomMeal(selectedDinner);
+
+
+             // แสดงแผนการรับประทานอาหาร 7 วัน
+             for (let day = 1; day <= 7; day++) {
                 const dayHeader = document.createElement("h3");
                 dayHeader.innerText = `วันที่ ${day}`;
                 mealList.appendChild(dayHeader);
-    
-                Object.keys(meals).forEach(mealTime => {
-                    const mealOptions = meals[mealTime];
-                    const mealIndex = Math.floor(Math.random() * mealOptions.length);
-                    const meal = mealOptions[mealIndex];
-    
+                
+                const dayMeals = {};
+        
+                ["อาหารเช้า", "อาหารกลางวัน", "อาหารเย็น"].forEach(mealTime => {
+                    const selectedMeals = filterMeals(meals[mealTime]);
+                    const meal = selectedMeals[Math.floor(Math.random() * selectedMeals.length)];
+                    
+                    dayMeals[mealTime] = meal;
+        
                     const listItem = document.createElement("div");
                     listItem.className = "meal-item";
+                    listItem.setAttribute("data-meal-time", mealTime);
+                    listItem.setAttribute("data-day", day);
                     listItem.innerHTML = `
                         <img src="${meal.image}" alt="${meal.name}">
                         <div class="meal-info">
                             <h4>${mealTime}: <span>${meal.name}</span></h4>
                             <p>แคลอรี่: ${meal.calories} kcal | โปรตีน: ${meal.protein}g | ไขมัน: ${meal.fat}g | คาร์บ: ${meal.carbs}g | โซเดียม: ${meal.sodium}mg</p>
                         </div>
-                        <button onclick="changeMeal(this, '${mealTime}')">เปลี่ยน</button>
+                        <button onclick="changeMeal(this, '${mealTime}', ${day})">เปลี่ยน</button>
                     `;
                     mealList.appendChild(listItem);
                 });
+                
+                const totalInfo = document.createElement("div");
+                totalInfo.className = "total-nutrition";
+                totalInfo.setAttribute("id", `total-nutrition-${day}`);
+                mealList.appendChild(totalInfo);
+                
+                updateTotalNutrition(day);
             }
         }
-    
-        function changeMeal(button, mealTime) {
-            const mealOptions = meals[mealTime];
-            const newMeal = mealOptions[Math.floor(Math.random() * mealOptions.length)];
-    
+        
+        function changeMeal(button, mealTime, day) {
+            const selectedMeals = filterMeals(meals[mealTime]);
+            const newMeal = selectedMeals[Math.floor(Math.random() * selectedMeals.length)];
+            
             const mealItem = button.parentElement;
+            mealItem.setAttribute("data-meal-time", mealTime);
+            mealItem.setAttribute("data-day", day);
             mealItem.innerHTML = `
                 <img src="${newMeal.image}" alt="${newMeal.name}">
                 <div class="meal-info">
                     <h4>${mealTime}: <span>${newMeal.name}</span></h4>
                     <p>แคลอรี่: ${newMeal.calories} kcal | โปรตีน: ${newMeal.protein}g | ไขมัน: ${newMeal.fat}g | คาร์บ: ${newMeal.carbs}g | โซเดียม: ${newMeal.sodium}mg</p>
                 </div>
-                <button onclick="changeMeal(this, '${mealTime}')">เปลี่ยน</button>
+                <button onclick="changeMeal(this, '${mealTime}', ${day})">เปลี่ยน</button>
             `;
+            
+            updateTotalNutrition(day);
         }
+        
+        function updateTotalNutrition(day) {
+            let totalCalories = 0, totalProtein = 0, totalFat = 0, totalCarbs = 0, totalSodium = 0;
+            
+            document.querySelectorAll(`#mealList .meal-item[data-day='${day}']`).forEach(item => {
+                const nutritionText = item.querySelector(".meal-info p").innerText;
+                const values = nutritionText.match(/\d+/g).map(Number);
+                totalCalories += values[0];
+                totalProtein += values[1];
+                totalFat += values[2];
+                totalCarbs += values[3];
+                totalSodium += values[4];
+            });
+        
+            const totalInfo = document.getElementById(`total-nutrition-${day}`);
+            if (totalInfo) {
+                totalInfo.innerHTML = `
+                    <h4>สรุปโภชนาการของวันที่ ${day}</h4>
+                    <p>แคลอรี่รวม: ${totalCalories} kcal | โปรตีนรวม: ${totalProtein}g | ไขมันรวม: ${totalFat}g | คาร์บรวม: ${totalCarbs}g | โซเดียมรวม: ${totalSodium}mg</p>
+                `;
+            }
+        }
+        
+        function filterMeals(mealOptions) {
+            return mealOptions.filter(meal => meal.calories < 600); // ตัวอย่างเงื่อนไขกรองเมนู
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+        }
+        
+        function saveMealPlan() {
+            const mealPlan = document.getElementById("mealList").innerHTML;
+            localStorage.setItem("mealPlan", mealPlan);
+            alert("บันทึกแผนมื้ออาหารเรียบร้อย!");
+        }
+        
+        function loadMealPlan() {
+            const mealPlan = localStorage.getItem("mealPlan");
+            if (mealPlan) {
+                document.getElementById("mealList").innerHTML = mealPlan;
+                document.getElementById("mealPlan").style.display = "block";
+            } else {
+                alert("ไม่มีแผนมื้ออาหารที่บันทึกไว้");
+            }
+        }
+        
+        function shareMealPlan() {
+            const mealPlan = document.getElementById("mealList").innerText;
+            const shareText = `แผนมื้ออาหารของฉัน:\n${mealPlan}`;
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert("คัดลอกแผนมื้ออาหารไปยังคลิปบอร์ดแล้ว! คุณสามารถแชร์ได้เลย");
+            });
+        }
+
+        function saveAsImage() {
+            const mealPlan = document.getElementById("mealPlan");
+            html2canvas(mealPlan).then(canvas => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "meal-plan.png";
+                link.click();
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+        });
+
+        
     </script>
+
+    <button class="button" onclick="saveMealPlan()">บันทึกแผน</button>
+    <button class="button" onclick="loadMealPlan()">โหลดแผน</button>
+    <button class="button" onclick="shareMealPlan()">แชร์แผน</button>
+    <button class="button" onclick="saveAsImage()">บันทึกเป็นรูปภาพ</button>
+
+
 </body>
 </html>
